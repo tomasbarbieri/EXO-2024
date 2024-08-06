@@ -45,21 +45,27 @@ def actualizar_horas_cumplidas(nombre, ubicacion):
         with open(archivo_presentes, "w") as archivo:
             archivo.write("")
 
-    # Leer el archivo de presentes y buscar el total actual de horas cumplidas
+    # Leer el archivo de presentes y calcular el total actual de horas cumplidas
     total_horas_cumplidas = 0
     with open(archivo_presentes, "r") as archivo:
         lineas = archivo.readlines()
         for linea in lineas:
-            if "Nombre:" in linea and nombre in linea:
-                total_horas_cumplidas += horas_por_dia
+            if "Horas cumplidas:" in linea:
+                partes = linea.strip().split(":")
+                total_horas_cumplidas = int(partes[1].split("/")[0].strip())
+                break
+    
+    # Agregar las horas del nuevo ingreso
+    total_horas_cumplidas += horas_por_dia
     
     # Actualizar el archivo con las nuevas horas
     with open(archivo_presentes, "a") as archivo:
         fecha_actual = datetime.now().strftime("%d-%m")
         hora_actual = datetime.now().strftime("%H:%M")
         archivo.write(f"{fecha_actual} / {nombre} / {hora_actual}\n")
+        archivo.write(f"Horas cumplidas: {total_horas_cumplidas}/216\n")
     
-    return total_horas_cumplidas + horas_por_dia
+    return total_horas_cumplidas
 
 def actualizar_encabezado():
     # Actualizar el encabezado del archivo "Presentes.txt" según la fecha actual
