@@ -1,4 +1,4 @@
-def obtener_ubicacion_archivo():
+  def obtener_ubicacion_archivo():
     return input("Introduce la ubicación del archivo 'pasantes_2024.txt': ").strip()
 
 def crear_archivo(ubicacion):
@@ -24,6 +24,23 @@ def actualizar_ultimo_numero(nuevo_numero):
     # Actualizar el archivo "ultimo_numero.txt" con el nuevo número
     with open("ultimo_numero.txt", "w") as archivo:
         archivo.write(str(nuevo_numero))
+
+def calcular_horas(dias, turno):
+    # Determinar las horas según el turno
+    if turno.lower() == "mañana":
+        horas_por_dia = 4
+    elif turno.lower() == "tarde":
+        horas_por_dia = 3
+    else:
+        print("Turno no válido. Debe ser 'mañana' o 'tarde'.")
+        return 0, 0
+
+    dias_lista = dias.split(',')
+    cantidad_dias = len(dias_lista)
+    horas_semanales = cantidad_dias * horas_por_dia
+    horas_mensuales = horas_semanales * 4
+
+    return horas_semanales, horas_mensuales
 
 def agregar_pasante(ubicacion, nombre, dias, turno, eliminar=False):
     # Leer el archivo y verificar si el nombre ya está
@@ -55,18 +72,12 @@ def agregar_pasante(ubicacion, nombre, dias, turno, eliminar=False):
             nuevo_numero = ultimo_numero + 1
             actualizar_ultimo_numero(nuevo_numero)
 
-            # Determinar las horas según el turno
-            if turno.lower() == "mañana":
-                horas = 4
-            elif turno.lower() == "tarde":
-                horas = 3
-            else:
-                print("Turno no válido. Debe ser 'mañana' o 'tarde'.")
-                return
+            # Calcular horas semanales y mensuales
+            horas_semanales, horas_mensuales = calcular_horas(dias, turno)
 
-            # Agregar el nombre con los días, turno y el número asignado al archivo
+            # Agregar el nombre con los días, turno, horas y el número asignado al archivo
             with open(ubicacion, "a") as archivo:
-                archivo.write(f"{nuevo_numero} {nombre};{dias};{turno};{horas} horas\n")
+                archivo.write(f"{nuevo_numero} {nombre};{dias};{turno};{horas_semanales} horas semanales;{horas_mensuales} horas mensuales\n")
             print("Nombre agregado")
 
 ubicacion_archivo = obtener_ubicacion_archivo()
