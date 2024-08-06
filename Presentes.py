@@ -6,6 +6,24 @@ def obtener_ubicacion_archivo(nombre_archivo):
     ubicacion = os.path.abspath(nombre_archivo)
     return ubicacion
 
+def calcular_horas_anuales(dias, turno):
+    # Determinar las horas según el turno
+    if turno.lower() == "mañana":
+        horas_por_dia = 4
+    elif turno.lower() == "tarde":
+        horas_por_dia = 3
+    else:
+        print("Turno no válido. Debe ser 'mañana' o 'tarde'.")
+        return 0
+
+    dias_lista = dias.split(',')
+    cantidad_dias = len(dias_lista)
+    horas_semanales = cantidad_dias * horas_por_dia
+    horas_mensuales = horas_semanales * 4
+    horas_anuales = horas_mensuales * 12 // 4  # Aproximadamente 12 meses en un año
+
+    return horas_anuales
+
 def buscar_y_sumar_horas(nombre, ubicacion):
     # Buscar el nombre en el archivo y sumar las horas correspondientes
     nombre = nombre.strip().lower()
@@ -17,7 +35,9 @@ def buscar_y_sumar_horas(nombre, ubicacion):
             partes = linea.strip().split(";")
             nombre_archivo = partes[0].split(" ", 1)[1].strip().lower()
             if nombre == nombre_archivo:
-                horas_anuales = int(partes[4].split()[0])
+                dias = partes[1]
+                turno = partes[2]
+                horas_anuales = calcular_horas_anuales(dias, turno)
                 total_horas += horas_anuales
     return total_horas
 
@@ -49,4 +69,3 @@ def main():
             
 if __name__ == "__main__":
     main()
--
