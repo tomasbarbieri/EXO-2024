@@ -1,8 +1,19 @@
-  def obtener_ubicacion_archivo():
-    return input("Introduce la ubicación del archivo 'pasantes_2024.txt': ").strip()
+import os
+
+def obtener_ubicacion_archivo():
+    # Crear el archivo "ALTAS_pasantes_2024.txt" en la ubicación actual si no existe
+    nombre_archivo = "ALTAS_pasantes_2024.txt"
+    ubicacion = os.path.abspath(nombre_archivo)
+    
+    if not os.path.exists(ubicacion):
+        with open(ubicacion, "w") as archivo:
+            pass
+    
+    print(f"El archivo se ha creado en: {ubicacion}")
+    return ubicacion
 
 def crear_archivo(ubicacion):
-    # Crear el archivo "pasantes_2024.txt" si no existe en la ubicación especificada
+    # Crear el archivo "ALTAS_pasantes_2024.txt" si no existe en la ubicación especificada
     with open(ubicacion, "a") as archivo:
         pass
     
@@ -33,14 +44,15 @@ def calcular_horas(dias, turno):
         horas_por_dia = 3
     else:
         print("Turno no válido. Debe ser 'mañana' o 'tarde'.")
-        return 0, 0
+        return 0
 
     dias_lista = dias.split(',')
     cantidad_dias = len(dias_lista)
     horas_semanales = cantidad_dias * horas_por_dia
     horas_mensuales = horas_semanales * 4
+    horas_anuales = 216  # Horas anuales fijas
 
-    return horas_semanales, horas_mensuales
+    return horas_anuales
 
 def agregar_pasante(ubicacion, nombre, dias, turno, eliminar=False):
     # Leer el archivo y verificar si el nombre ya está
@@ -72,12 +84,12 @@ def agregar_pasante(ubicacion, nombre, dias, turno, eliminar=False):
             nuevo_numero = ultimo_numero + 1
             actualizar_ultimo_numero(nuevo_numero)
 
-            # Calcular horas semanales y mensuales
-            horas_semanales, horas_mensuales = calcular_horas(dias, turno)
+            # Calcular horas anuales
+            horas_anuales = calcular_horas(dias, turno)
 
             # Agregar el nombre con los días, turno, horas y el número asignado al archivo
             with open(ubicacion, "a") as archivo:
-                archivo.write(f"{nuevo_numero} {nombre};{dias};{turno};{horas_semanales} horas semanales;{horas_mensuales} horas mensuales\n")
+                archivo.write(f"{nuevo_numero} {nombre};{dias};{turno};{horas_anuales} horas anuales\n")
             print("Nombre agregado")
 
 ubicacion_archivo = obtener_ubicacion_archivo()
