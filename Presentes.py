@@ -6,8 +6,8 @@ def obtener_ubicacion_archivo(nombre_archivo):
     ubicacion = os.path.abspath(nombre_archivo)
     return ubicacion
 
-def calcular_horas_anuales(dias, turno):
-    # Determinar las horas según el turno
+def calcular_horas_cumplidas(dias, turno):
+    # Determinar las horas diarias según el turno
     if turno.lower() == "mañana":
         horas_por_dia = 4
     elif turno.lower() == "tarde":
@@ -18,16 +18,14 @@ def calcular_horas_anuales(dias, turno):
 
     dias_lista = dias.split(',')
     cantidad_dias = len(dias_lista)
-    horas_semanales = cantidad_dias * horas_por_dia
-    horas_mensuales = horas_semanales * 4
-    horas_anuales = horas_mensuales * 12 // 4  # Aproximadamente 12 meses en un año
+    horas_cumplidas = cantidad_dias * horas_por_dia
 
-    return horas_anuales
+    return horas_cumplidas
 
 def buscar_y_sumar_horas(nombre, ubicacion):
     # Buscar el nombre en el archivo y sumar las horas correspondientes
     nombre = nombre.strip().lower()
-    total_horas = 0
+    total_horas_cumplidas = 0
     
     with open(ubicacion, "r") as archivo:
         lineas = archivo.readlines()
@@ -37,11 +35,14 @@ def buscar_y_sumar_horas(nombre, ubicacion):
             if nombre == nombre_archivo:
                 dias = partes[1]
                 turno = partes[2]
-                horas_anuales = calcular_horas_anuales(dias, turno)
-                total_horas += horas_anuales
-    return total_horas
+                horas_cumplidas = calcular_horas_cumplidas(dias, turno)
+                total_horas_cumplidas += horas_cumplidas
 
-def registrar_presentes(nombre):
+    horas_totales = 216
+    horas_restantes = horas_totales - total_horas_cumplidas
+    return total_horas_cumplidas, horas_restantes
+
+def registrar_presentes(nombre, horas_cumplidas):
     # Registrar los presentes en el archivo "Presentes"
     fecha_actual = datetime.now().strftime("%Y-%m-%d")
     nombre_archivo = "Presentes.txt"
@@ -49,6 +50,7 @@ def registrar_presentes(nombre):
     with open(nombre_archivo, "a") as archivo:
         archivo.write(f"\nFecha: {fecha_actual}\n")
         archivo.write(f"Nombre: {nombre}\n")
+        archivo.write(f"Horas cumplidas: {horas_cumplidas}/216\n")
 
 def main():
     ubicacion_archivo = obtener_ubicacion_archivo("ALTAS_pasantes_2024.txt")
@@ -59,10 +61,11 @@ def main():
             break
         
         # Buscar y sumar horas
-        total_horas = buscar_y_sumar_horas(nombre, ubicacion_archivo)
-        if total_horas > 0:
-            print(f"El total de horas anuales para {nombre} es: {total_horas} horas")
-            registrar_presentes(nombre)
+        horas_cumplidas, horas_restantes = buscar_y_sumar_horas(nombre, ubicacion_archivo)
+        if horas_cumplidas > 0:
+            print(f"El total de horas cumplidas para {nombre} es: {horas_cumplidas} horas")
+            print(f"Horarios restantes para completar las 216 horas: {horas_restantes} horas")
+            registrar_presentes(nombre, horas_cumplidas)
             print(f"{nombre} ha sido registrado en el archivo 'Presentes'")
         else:
             print(f"No se encontró a {nombre} en el archivo.")
