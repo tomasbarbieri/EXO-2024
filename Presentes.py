@@ -24,8 +24,9 @@ def buscar_horas(nombre, ubicacion):
                 turno = partes[2]
                 horas_por_dia = calcular_horas_por_dia(turno)
                 if horas_por_dia is not None:
-                    return horas_por_dia
-    return None
+                    dias = partes[1].split(',')
+                    return horas_por_dia, len(dias)
+    return None, None
 
 def agregar_nuevo_ingreso(nombre, ubicacion):
     print("Este nombre no está en el archivo.")
@@ -41,13 +42,13 @@ def agregar_nuevo_ingreso(nombre, ubicacion):
     
     horas_cumplidas = len(dias.split(',')) * horas_por_dia
     print(f"Nombre agregado con éxito.")
-    print(f"Horas cumplidas: {horas_cumplidas}")
+    print(f"Horas cumplidas en este ingreso: {horas_cumplidas}")
     print(f"Horas restantes: {216 - horas_cumplidas}")
     
     return horas_cumplidas
 
 def actualizar_horas_cumplidas(nombre, ubicacion):
-    horas_por_dia = buscar_horas(nombre, ubicacion)
+    horas_por_dia, num_dias = buscar_horas(nombre, ubicacion)
     if horas_por_dia is None:
         return None
     
@@ -67,7 +68,9 @@ def actualizar_horas_cumplidas(nombre, ubicacion):
                 total_horas_cumplidas = int(partes[1].split("/")[0].strip())
                 break
     
-    total_horas_cumplidas += horas_por_dia
+    # Calcular horas de acuerdo a la cantidad de días
+    horas_cumplidas = horas_por_dia * num_dias
+    total_horas_cumplidas += horas_cumplidas
     
     with open(archivo_presentes, "a") as archivo:
         fecha_actual = datetime.now().strftime("%d-%m")
@@ -75,7 +78,7 @@ def actualizar_horas_cumplidas(nombre, ubicacion):
         archivo.write(f"{fecha_actual} / {nombre} / {hora_actual}\n")
         archivo.write(f"Horas cumplidas: {total_horas_cumplidas}/216\n")
     
-    return total_horas_cumplidas
+    return horas_cumplidas, total_horas_cumplidas
 
 def actualizar_encabezado():
     fecha_actual = datetime.now().strftime("%d-%m")
@@ -112,18 +115,18 @@ def main():
         
         actualizar_encabezado()
         
-        horas_por_dia = buscar_horas(nombre, ubicacion_archivo)
+        horas_por_dia, num_dias = buscar_horas(nombre, ubicacion_archivo)
         if horas_por_dia is None:
             horas_cumplidas = agregar_nuevo_ingreso(nombre, ubicacion_archivo)
             if horas_cumplidas is not None:
-                print(f"Horas cumplidas: {horas_cumplidas}")
+                print(f"Horas cumplidas en este ingreso: {horas_cumplidas}")
                 print(f"Horas restantes: {216 - horas_cumplidas}")
         else:
-            horas_cumplidas = actualizar_horas_cumplidas(nombre, ubicacion_archivo)
+            horas_cumplidas, total_horas_cumplidas = actualizar_horas_cumplidas(nombre, ubicacion_archivo)
             if horas_cumplidas is not None:
                 horas_totales = 216
-                horas_restantes = horas_totales - horas_cumplidas
-                print(f"El total de horas cumplidas para {nombre} es: {horas_cumplidas} horas")
+                horas_restantes = horas_totales - total_horas_cumplidas
+                print(f"El total de horas cumplidas para {nombre} es: {total_horas_cumplidas} horas")
                 print(f"Horarios restantes para completar las 216 horas: {horas_restantes} horas")
             else:
                 print(f"No se encontró a {nombre} en el archivo o turno no válido.")
