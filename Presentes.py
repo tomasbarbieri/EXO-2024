@@ -136,7 +136,7 @@ def main():
                 horas_totales = 216
                 horas_restantes = horas_totales - total_horas_cumplidas
                 print(f"El total de horas cumplidas para {nombre} es: {total_horas_cumplidas} horas")
-                print(f"Horarios restantes para completar las 216 horas: {horas_restantes} horas")
+                print(f"Horas restantes para completar las 216 horas: {horas_restantes} horas")
             else:
                 print(f"No se encontró a {nombre} en el archivo o turno no válido.")
 
