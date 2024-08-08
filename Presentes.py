@@ -13,19 +13,17 @@ def calcular_horas_por_dia(turno):
         print("Turno no válido. Debe ser 'mañana' o 'tarde'.")
         return None
 
-def buscar_horas(nombre, ubicacion):
+def buscar_datos(nombre, ubicacion):
     nombre = nombre.strip().lower()
     with open(ubicacion, "r") as archivo:
         lineas = archivo.readlines()
         for linea in lineas:
             partes = linea.strip().split(";")
-            nombre_archivo = partes[0].split(" ", 1)[1].strip().lower()
+            nombre_archivo = partes[0].strip().lower()
             if nombre == nombre_archivo:
+                dias = partes[1]
                 turno = partes[2]
-                horas_por_dia = calcular_horas_por_dia(turno)
-                if horas_por_dia is not None:
-                    dias = partes[1].split(',')
-                    return horas_por_dia, len(dias)
+                return dias, turno
     return None, None
 
 def agregar_nuevo_ingreso(nombre, ubicacion):
@@ -48,9 +46,13 @@ def agregar_nuevo_ingreso(nombre, ubicacion):
     return horas_cumplidas
 
 def actualizar_horas_cumplidas(nombre, ubicacion):
-    horas_por_dia, num_dias = buscar_horas(nombre, ubicacion)
+    dias, turno = buscar_datos(nombre, ubicacion)
+    if dias is None or turno is None:
+        return None, None
+    
+    horas_por_dia = calcular_horas_por_dia(turno)
     if horas_por_dia is None:
-        return None
+        return None, None
     
     horas_totales = 216
     archivo_presentes = "Presentes.txt"
@@ -68,7 +70,8 @@ def actualizar_horas_cumplidas(nombre, ubicacion):
                 total_horas_cumplidas = int(partes[1].split("/")[0].strip())
                 break
     
-    # Calcular horas de acuerdo a la cantidad de días
+    # Calcular horas de acuerdo a los días registrados
+    num_dias = len(dias.split(','))
     horas_cumplidas = horas_por_dia * num_dias
     total_horas_cumplidas += horas_cumplidas
     
@@ -109,14 +112,14 @@ def main():
     ubicacion_archivo = obtener_ubicacion_archivo("ALTAS_pasantes_2024.txt")
     
     while True:
-        nombre = input("Introduce el nombre y apellido del pasante (o 'salir' para terminar): ").strip()
-        if nombre.lower() == "salir":
+        nombre = input("Introduce el nombre y apellido del pasante (o 'salir' para terminar): ").strip().lower()
+        if nombre == "salir":
             break
         
         actualizar_encabezado()
         
-        horas_por_dia, num_dias = buscar_horas(nombre, ubicacion_archivo)
-        if horas_por_dia is None:
+        dias, turno = buscar_datos(nombre, ubicacion_archivo)
+        if dias is None or turno is None:
             horas_cumplidas = agregar_nuevo_ingreso(nombre, ubicacion_archivo)
             if horas_cumplidas is not None:
                 print(f"Horas cumplidas en este ingreso: {horas_cumplidas}")
