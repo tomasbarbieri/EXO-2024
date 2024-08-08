@@ -2,12 +2,9 @@ import os
 from datetime import datetime
 
 def obtener_ubicacion_archivo(nombre_archivo):
-    # Obtener la ubicación del archivo en la ruta actual
-    ubicacion = os.path.abspath(nombre_archivo)
-    return ubicacion
+    return os.path.abspath(nombre_archivo)
 
 def calcular_horas_por_dia(turno):
-    # Determinar las horas diarias según el turno
     if turno.lower() == "mañana":
         return 4
     elif turno.lower() == "tarde":
@@ -17,21 +14,17 @@ def calcular_horas_por_dia(turno):
         return None
 
 def buscar_horas(nombre, ubicacion):
-    # Buscar el nombre en el archivo y obtener las horas diarias correspondientes
     nombre = nombre.strip().lower()
-    
     with open(ubicacion, "r") as archivo:
         lineas = archivo.readlines()
         for linea in lineas:
             partes = linea.strip().split(";")
             nombre_archivo = partes[0].split(" ", 1)[1].strip().lower()
             if nombre == nombre_archivo:
-                dias = partes[1]
                 turno = partes[2]
                 horas_por_dia = calcular_horas_por_dia(turno)
                 if horas_por_dia is not None:
-                    return int(dias) * horas_por_dia
-    
+                    return horas_por_dia
     return None
 
 def agregar_nuevo_ingreso(nombre, ubicacion):
@@ -64,8 +57,7 @@ def actualizar_horas_cumplidas(nombre, ubicacion):
     if not os.path.exists(archivo_presentes):
         with open(archivo_presentes, "w") as archivo:
             archivo.write("")
-
-    # Leer el archivo de presentes y calcular el total actual de horas cumplidas
+    
     total_horas_cumplidas = 0
     with open(archivo_presentes, "r") as archivo:
         lineas = archivo.readlines()
@@ -75,10 +67,8 @@ def actualizar_horas_cumplidas(nombre, ubicacion):
                 total_horas_cumplidas = int(partes[1].split("/")[0].strip())
                 break
     
-    # Agregar las horas del nuevo ingreso
     total_horas_cumplidas += horas_por_dia
     
-    # Actualizar el archivo con las nuevas horas
     with open(archivo_presentes, "a") as archivo:
         fecha_actual = datetime.now().strftime("%d-%m")
         hora_actual = datetime.now().strftime("%H:%M")
@@ -88,11 +78,9 @@ def actualizar_horas_cumplidas(nombre, ubicacion):
     return total_horas_cumplidas
 
 def actualizar_encabezado():
-    # Actualizar el encabezado del archivo "Presentes.txt" según la fecha actual
     fecha_actual = datetime.now().strftime("%d-%m")
     hora_actual = datetime.now().strftime("%H:%M")
     
-    # Determinar el turno según la hora actual
     if "07:30" <= hora_actual < "12:30":
         turno = "TM"
     elif "12:30" <= hora_actual <= "23:59":
@@ -102,7 +90,6 @@ def actualizar_encabezado():
 
     encabezado = f"------ Presentes {fecha_actual} {turno} ------\n"
 
-    # Verificar si el archivo existe y necesita actualización
     if not os.path.exists("Presentes.txt"):
         with open("Presentes.txt", "w") as archivo:
             archivo.write(encabezado)
@@ -110,7 +97,6 @@ def actualizar_encabezado():
         with open("Presentes.txt", "r") as archivo:
             lineas = archivo.readlines()
         
-        # Verificar si el encabezado ya está presente y actualizarlo
         if lineas and lineas[0] != encabezado:
             with open("Presentes.txt", "w") as archivo:
                 archivo.write(encabezado)
@@ -124,17 +110,15 @@ def main():
         if nombre.lower() == "salir":
             break
         
-        # Actualizar el encabezado del archivo
         actualizar_encabezado()
         
-        # Verificar si el nombre ya está en el archivo
-        if buscar_horas(nombre, ubicacion_archivo) is None:
+        horas_por_dia = buscar_horas(nombre, ubicacion_archivo)
+        if horas_por_dia is None:
             horas_cumplidas = agregar_nuevo_ingreso(nombre, ubicacion_archivo)
             if horas_cumplidas is not None:
                 print(f"Horas cumplidas: {horas_cumplidas}")
                 print(f"Horas restantes: {216 - horas_cumplidas}")
         else:
-            # Actualizar y mostrar las horas cumplidas
             horas_cumplidas = actualizar_horas_cumplidas(nombre, ubicacion_archivo)
             if horas_cumplidas is not None:
                 horas_totales = 216
