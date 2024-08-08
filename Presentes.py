@@ -38,13 +38,11 @@ def agregar_nuevo_ingreso(nombre, ubicacion):
     with open(ubicacion, "a") as archivo:
         archivo.write(f"{nombre} ; {dias} ; {turno}\n")
     
-    horas_cumplidas = len(dias.split(',')) * horas_por_dia
-    
     # Actualizar archivo de nombres ingresados
     with open("Nombres_ingresados.txt", "a") as archivo:
         archivo.write(f"{nombre}\n")
     
-    return horas_cumplidas
+    return horas_por_dia
 
 def actualizar_horas_cumplidas(nombre, ubicacion):
     dias, turno = buscar_datos(nombre, ubicacion)
@@ -71,8 +69,7 @@ def actualizar_horas_cumplidas(nombre, ubicacion):
                 total_horas_cumplidas = int(partes[1].split("/")[0].strip())
                 break
     
-    num_dias = len(dias.split(','))
-    horas_cumplidas = horas_por_dia * num_dias
+    horas_cumplidas = horas_por_dia
     total_horas_cumplidas += horas_cumplidas
     
     with open(archivo_presentes, "a") as archivo:
