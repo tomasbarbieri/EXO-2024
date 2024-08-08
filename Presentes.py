@@ -70,7 +70,6 @@ def actualizar_horas_cumplidas(nombre, ubicacion):
                 total_horas_cumplidas = int(partes[1].split("/")[0].strip())
                 break
     
-    # Calcular horas de acuerdo a los días registrados
     num_dias = len(dias.split(','))
     horas_cumplidas = horas_por_dia * num_dias
     total_horas_cumplidas += horas_cumplidas
