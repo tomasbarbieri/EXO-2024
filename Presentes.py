@@ -43,6 +43,10 @@ def agregar_nuevo_ingreso(nombre, ubicacion):
     print(f"Horas cumplidas en este ingreso: {horas_cumplidas}")
     print(f"Horas restantes: {216 - horas_cumplidas}")
     
+    # Actualizar archivo de nombres ingresados
+    with open("Nombres_ingresados.txt", "a") as archivo:
+        archivo.write(f"{nombre}\n")
+    
     return horas_cumplidas
 
 def actualizar_horas_cumplidas(nombre, ubicacion):
@@ -107,6 +111,16 @@ def actualizar_encabezado():
                 archivo.write(encabezado)
                 archivo.writelines(lineas[1:])
 
+def nombre_existe(nombre):
+    nombre = nombre.strip().lower()
+    if not os.path.exists("Nombres_ingresados.txt"):
+        return False
+    
+    with open("Nombres_ingresados.txt", "r") as archivo:
+        nombres = archivo.read().splitlines()
+    
+    return nombre in nombres
+
 def main():
     ubicacion_archivo = obtener_ubicacion_archivo("ALTAS_pasantes_2024.txt")
     
@@ -117,8 +131,7 @@ def main():
         
         actualizar_encabezado()
         
-        dias, turno = buscar_datos(nombre, ubicacion_archivo)
-        if dias is None or turno is None:
+        if not nombre_existe(nombre):
             horas_cumplidas = agregar_nuevo_ingreso(nombre, ubicacion_archivo)
             if horas_cumplidas is not None:
                 print(f"Horas cumplidas en este ingreso: {horas_cumplidas}")
