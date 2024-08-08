@@ -39,9 +39,6 @@ def agregar_nuevo_ingreso(nombre, ubicacion):
         archivo.write(f"{nombre} ; {dias} ; {turno}\n")
     
     horas_cumplidas = len(dias.split(',')) * horas_por_dia
-    print(f"Nombre agregado con éxito.")
-    print(f"Horas cumplidas en este ingreso: {horas_cumplidas}")
-    print(f"Horas restantes: {216 - horas_cumplidas}")
     
     # Actualizar archivo de nombres ingresados
     with open("Nombres_ingresados.txt", "a") as archivo:
