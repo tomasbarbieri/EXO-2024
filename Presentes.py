@@ -29,7 +29,8 @@ def buscar_horas(nombre, ubicacion):
                 dias = partes[1]
                 turno = partes[2]
                 horas_por_dia = calcular_horas_por_dia(turno)
-                return horas_por_dia
+                if horas_por_dia is not None:
+                    return int(dias) * horas_por_dia
     
     return None
 
